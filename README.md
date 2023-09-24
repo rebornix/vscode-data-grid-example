@@ -1,37 +1,5 @@
-# Hello World (React + Create React App)
+# VS Code Data Grid viewer example
 
-This is an implementation of the default [Hello World](https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/default/hello-world) sample extension that demonstrates how to set up and use a [React](https://reactjs.org/) + [Create React App](https://create-react-app.dev/) + [Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) webview extension.
+<video src="https://github.com/rebornix/vscode-data-grid-example/assets/876920/192b2ea9-5fd8-42ae-98ae-4f9e5ad31634" width="640" height="360" controls></video>
 
-![A screenshot of the sample extension.](./assets/hello-world.png)
-
-## Documentation
-
-For a deeper dive into how this sample works, read the guides below.
-
-- [Extension structure](./docs/extension-structure.md)
-- [Extension commands](./docs/extension-commands.md)
-- [Extension development cycle](./docs/extension-development-cycle.md)
-
-## Run The Sample
-
-```bash
-# Copy sample extension locally
-npx degit microsoft/vscode-webview-ui-toolkit-samples/frameworks/hello-world-react-cra hello-world
-
-# Navigate into sample directory
-cd hello-world
-
-# Install dependencies for both the extension and webview UI source code
-npm run install:all
-
-# Build webview UI source code
-npm run build:webview
-
-# Open sample in VS Code
-code .
-```
-
-Once the sample is open inside VS Code you can run the extension by doing the following:
-
-1. Press `F5` to open a new Extension Development Host window
-2. Inside the host window, open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and type `Hello World (React + CRA): Show`
+This is an example of using the [Data Grid](https://github.com/glideapps/glide-data-grid) library to open data frame in VS Code.
