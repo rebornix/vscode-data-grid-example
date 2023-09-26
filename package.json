@@ -9,7 +9,7 @@
   "main": "./out/extension.js",
   "activationEvents": ["*"],
   "contributes": {
-    "dataframeViewer": [
+    "jupyterVariableViewers": [
       {
         "command": "hello-world.showDataGrid",
         "title": "Show Data Grid"
