@@ -12,7 +12,17 @@
     "jupyterVariableViewers": [
       {
         "command": "hello-world.showDataGrid",
-        "title": "Show Data Grid"
+        "title": "Show Data Grid",
+        "dataTypes": [
+          "DataFrame",
+          "list",
+          "dict",
+          "ndarray",
+          "Series",
+          "Tensor",
+          "EagerTensor",
+          "DataArray"
+        ]
       }
     ],
     "commands": [
