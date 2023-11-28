@@ -1,8 +1,7 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, extensions, workspace, NotebookDocument } from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, extensions, workspace, NotebookDocument, CancellationTokenSource, NotebookCellOutputItem } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { Jupyter, KernelConnectionMetadataWithKernelSpecs } from "./jupyterAPI";
-import { VSCJupyterKernelSession } from "./jupyterSession";
+import { Jupyter, Kernel } from "./jupyterAPI";
 
 interface DataFrameColumns {
   columns: {
@@ -27,6 +26,8 @@ try:
 except:
     pass
 `;
+
+const ErrorMimeType = NotebookCellOutputItem.error(new Error('')).mime;
                             
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -77,27 +78,45 @@ export class HelloWorldPanel {
   }
 
   initialize(extensionUri: Uri, jupyterApi: Jupyter, notebook: NotebookDocument, variable: string) {
-    jupyterApi.ready.then(async () => {
-      const kernelService = await jupyterApi.getKernelService();
-      if (kernelService) {
-        const kernel = await kernelService.getKernel(notebook.uri);
-
-        if (!kernel) {
-          return;
-        }
-        const session = new VSCJupyterKernelSession(kernel.connection, kernel.metadata as KernelConnectionMetadataWithKernelSpecs);
-        const fetchVariableValueCode = await this._generateCodeForDataFrameColumns(extensionUri, variable);
-        const result = await session.executeCode(fetchVariableValueCode);
-        const value = JSON.parse(result) as DataFrameColumns;
-        this._columns = value;
-        const fetchVariableValueCode2 = await this._generateCodeForDataFrameRows(extensionUri, variable, 0, this._columns.rowCount - 1);
-        const result2 = await session.executeCode(fetchVariableValueCode2);
-        console.log(result2);
-        const value2 = JSON.parse(result2) as DataFrameValues;
-        this._values = value2;
-        this._initializeWebview(extensionUri);
+    jupyterApi.kernels.getKernel(notebook.uri).then(async (kernel) => {
+      if (!kernel) {
+        return;
       }
+
+      const fetchVariableValueCode = await this._generateCodeForDataFrameColumns(extensionUri, variable);
+      const result = await this._runCode(kernel, fetchVariableValueCode);
+      const value = JSON.parse(result) as DataFrameColumns;
+      this._columns = value;
+      const fetchVariableValueCode2 = await this._generateCodeForDataFrameRows(extensionUri, variable, 0, this._columns.rowCount - 1);
+      const result2 = await this._runCode(kernel, fetchVariableValueCode2);
+      const value2 = JSON.parse(result2) as DataFrameValues;
+      this._values = value2;
+      this._initializeWebview(extensionUri);
     });
+  }
+
+  private async _runCode(kernel: Kernel, code: string) {
+    const tokenSource = new CancellationTokenSource();
+    const textDecoder = new TextDecoder();
+    let streamingOutput: string[] = [];
+    try {
+      for await (const outputs of kernel.executeCode(code, tokenSource.token)) {
+        for (const output of outputs) {
+          if (output.mime === ErrorMimeType) {
+            const error = JSON.parse(textDecoder.decode(output.data)) as Error;
+            console.log(
+              `Error executing code ${error.name}: ${error.message},/n ${error.stack}`
+            );
+          } else {
+            streamingOutput.push(textDecoder.decode(output.data));
+          }
+        }
+      }
+    } finally {
+      tokenSource.dispose();
+    }
+
+    return streamingOutput.join('');
   }
 
   private async _generateCodeForDataFrameColumns(extensionUri: Uri, variableName: string) {
