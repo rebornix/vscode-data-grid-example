@@ -1,5 +1,5 @@
-import { commands, ExtensionContext } from "vscode";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { commands, ExtensionContext, Uri } from "vscode";
+import { HelloWorldPanel } from "./panels/panel";
 
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
@@ -7,8 +7,12 @@ export function activate(context: ExtensionContext) {
     HelloWorldPanel.render(context.extensionUri, undefined);
   });
 
-  context.subscriptions.push(commands.registerCommand('hello-world.showDataGrid', (data: { variable: any; }) => {
-    HelloWorldPanel.render(context.extensionUri, data.variable.name);
+  context.subscriptions.push(commands.registerCommand('hello-world.showDataGrid', (variable: {
+    name: string;
+    type: string;
+    fileName?: Uri
+  }) => {
+    HelloWorldPanel.render(context.extensionUri, variable.name);
   }));
 
   // Add command to the extension context

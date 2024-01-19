@@ -9,10 +9,9 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@glideapps/glide-data-grid": "^5.3.0",
+    "@glideapps/glide-data-grid": "^6.0.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "lodash": "^4.17.21",
-    "marked": "^9.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-responsive-carousel": "^3.2.23"

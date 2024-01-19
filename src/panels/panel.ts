@@ -101,7 +101,7 @@ export class HelloWorldPanel {
     let streamingOutput: string[] = [];
     try {
       for await (const outputs of kernel.executeCode(code, tokenSource.token)) {
-        for (const output of outputs) {
+        for (const output of outputs.items) {
           if (output.mime === ErrorMimeType) {
             const error = JSON.parse(textDecoder.decode(output.data)) as Error;
             console.log(

@@ -164,6 +164,16 @@ export interface JupyterServerCollection {
     dispose(): void;
 }
 
+interface Output {
+    /**
+     * The output items of this output.
+     */
+    items: OutputItem[];
+    /**
+     * Arbitrary metadata for this cell output. Can be anything but must be JSON-stringifyable.
+     */
+    metadata?: { [key: string]: any };
+}
 
 interface OutputItem {
     /**
@@ -198,7 +208,7 @@ export interface Kernel {
      * @param token Triggers the cancellation of the execution.
      * @returns Async iterable of output items, that completes when the execution is complete.
      */
-    executeCode(code: string, token: CancellationToken): AsyncIterable<OutputItem[]>;
+    executeCode(code: string, token: CancellationToken): AsyncIterable<Output>;
 }
 export interface Kernels {
     /**
